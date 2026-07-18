@@ -1,6 +1,7 @@
 import { Tabs } from "expo-router";
 import React from "react";
 
+import { useAuth } from "@/app/AuthProvider"; //
 import { HapticTab } from "@/components/haptic-tab";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Colors } from "@/constants/theme";
@@ -8,6 +9,7 @@ import { useColorScheme } from "@/hooks/use-color-scheme";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const { user } = useAuth(); //
 
   return (
     <Tabs
@@ -27,24 +29,21 @@ export default function TabLayout() {
         }}
       />
 
-      <Tabs.Screen
-        name="sign-up"
-        options={{
-          title: "Sign Up",
-        }}
-      />
-      <Tabs.Screen
-        name="sign-in"
-        options={{
-          title: "Sign In",
-        }}
-      />
-      <Tabs.Screen
-        name="employee"
-        options={{
-          title: "Employee",
-        }}
-      />
+      {!user && (
+        <>
+          <Tabs.Screen name="sign-in" options={{ title: "Sign In" }} />
+          <Tabs.Screen name="sign-up" options={{ title: "Sign Up" }} />
+        </>
+      )}
+
+      {user ? (
+        <Tabs.Screen name="employee" options={{ title: "Employee" }} />
+      ) : (
+        <Tabs.Screen
+          name="employee"
+          options={{ href: null }} // hides tab entirely
+        />
+      )}
     </Tabs>
   );
 }

@@ -1,3 +1,4 @@
+import { useAuth } from "@/app/AuthProvider";
 import { router } from "expo-router";
 import { Formik } from "formik";
 import { useState } from "react";
@@ -25,6 +26,7 @@ const signInSchema = Yup.object({
 
 export default function SignInScreen() {
   const [showPassword, setShowPassword] = useState(false);
+  const { login } = useAuth();
 
   return (
     <KeyboardAvoidingView
@@ -46,9 +48,14 @@ export default function SignInScreen() {
           validationSchema={signInSchema}
           validateOnBlur
           validateOnChange
-          onSubmit={(values, { resetForm }) => {
-            Alert.alert("Success", `Signed in with email: ${values.email}`);
-            resetForm();
+          onSubmit={async (values, { resetForm }) => {
+            try {
+              await login(values.email, values.password);
+              resetForm();
+              router.replace("/employee");
+            } catch (error: any) {
+              Alert.alert("Sign In Failed", error.message);
+            }
           }}
         >
           {({

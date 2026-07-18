@@ -1,16 +1,17 @@
+import { useAuth } from "@/app/AuthProvider"; // ⭐ NEW
 import { router } from "expo-router";
 import { Formik } from "formik";
 import { useState } from "react";
 import {
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 import * as Yup from "yup";
 
@@ -32,6 +33,7 @@ const signUpSchema = Yup.object({
 
 export default function SignUpScreen() {
   const [showPassword, setShowPassword] = useState(false);
+  const { signup } = useAuth();
 
   return (
     <KeyboardAvoidingView
@@ -55,12 +57,14 @@ export default function SignUpScreen() {
           validationSchema={signUpSchema}
           validateOnBlur
           validateOnChange
-          onSubmit={(values, { resetForm }) => {
-            Alert.alert(
-              "Account created",
-              `Welcome to FormFlow, ${values.fullName}!`,
-            );
-            resetForm();
+          onSubmit={async (values, { resetForm }) => {
+            try {
+              await signup(values.email, values.password);
+              resetForm();
+              router.replace("/employee");
+            } catch (error: any) {
+              Alert.alert("Sign Up Failed", error.message);
+            }
           }}
         >
           {({
