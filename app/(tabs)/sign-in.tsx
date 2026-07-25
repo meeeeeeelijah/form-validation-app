@@ -1,17 +1,17 @@
-import { useAuth } from "@/app/AuthProvider";
+import { useAuth } from "@/providers/AuthProvider";
 import { router } from "expo-router";
 import { Formik } from "formik";
 import { useState } from "react";
 import {
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
 } from "react-native";
 import * as Yup from "yup";
 

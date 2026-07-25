@@ -1,4 +1,4 @@
-import { useAuth } from "@/app/AuthProvider";
+import { useAuth } from "@/providers/AuthProvider";
 import { router } from "expo-router";
 import { Formik } from "formik";
 import { useState } from "react";

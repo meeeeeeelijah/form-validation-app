@@ -1,3 +1,4 @@
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { Formik } from "formik";
 import {
   Alert,
@@ -11,6 +12,7 @@ import {
   View,
 } from "react-native";
 import * as Yup from "yup";
+import { auth, db } from "../../config/firebase";
 
 const employeeSchema = Yup.object({
   firstName: Yup.string()
@@ -52,9 +54,29 @@ export default function EmployeeScreen() {
             phone: "",
           }}
           validationSchema={employeeSchema}
-          onSubmit={(values) => {
-            console.log(values);
-            Alert.alert("Saved!", `You have updated your information!`);
+          // onSubmit={(values) => {
+          //   console.log(values);
+          //   Alert.alert("Saved!", `You have updated your information!`);
+          // }}
+          onSubmit={async (values) => {
+            try {
+              const user = auth.currentUser;
+              if (!user) {
+                Alert.alert("Error", "No user is currently signed in.");
+                return;
+              }
+
+              await addDoc(collection(db, "employees"), {
+                ...values,
+                userId: user.uid,
+                createdAt: serverTimestamp(),
+              });
+
+              Alert.alert("Saved!", "You have updated your information!");
+            } catch (error) {
+              console.error("Error saving employee information:", error);
+              Alert.alert("Error", "Failed to save employee information.");
+            }
           }}
         >
           {({
