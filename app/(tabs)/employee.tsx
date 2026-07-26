@@ -1,6 +1,8 @@
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { Formik } from "formik";
+import { useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
   Platform,
@@ -33,6 +35,7 @@ const employeeSchema = Yup.object({
 });
 
 export default function EmployeeScreen() {
+  const [loading, setLoading] = useState(false);
   return (
     <KeyboardAvoidingView
       style={styles.keyboardView}
@@ -59,6 +62,7 @@ export default function EmployeeScreen() {
           //   Alert.alert("Saved!", `You have updated your information!`);
           // }}
           onSubmit={async (values) => {
+            setLoading(true);
             try {
               const user = auth.currentUser;
               if (!user) {
@@ -76,6 +80,8 @@ export default function EmployeeScreen() {
             } catch (error) {
               console.error("Error saving employee information:", error);
               Alert.alert("Error", "Failed to save employee information.");
+            } finally {
+              setLoading(false);
             }
           }}
         >
@@ -179,9 +185,18 @@ export default function EmployeeScreen() {
                 )}
               </View>
 
-              <Pressable style={[styles.button]} onPress={() => handleSubmit()}>
-                <Text style={[styles.buttonText]}>Save</Text>
-              </Pressable>
+              {loading ? (
+                <View style={styles.loadingIndicator}>
+                  <ActivityIndicator size="large" color={COLORS.primary} />
+                </View>
+              ) : (
+                <Pressable
+                  style={[styles.button]}
+                  onPress={() => handleSubmit()}
+                >
+                  <Text style={[styles.buttonText]}>Save</Text>
+                </Pressable>
+              )}
             </View>
           )}
         </Formik>
@@ -272,5 +287,10 @@ const styles = StyleSheet.create({
     color: COLORS.text,
     fontSize: 16,
     fontWeight: "700",
+  },
+  loadingIndicator: {
+    marginTop: 12,
+    paddingVertical: 16,
+    alignItems: "center",
   },
 });

@@ -3,6 +3,7 @@ import { router } from "expo-router";
 import { Formik } from "formik";
 import { useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
   Platform,
@@ -33,6 +34,7 @@ const signUpSchema = Yup.object({
 
 export default function SignUpScreen() {
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { signup } = useAuth();
 
   return (
@@ -59,11 +61,14 @@ export default function SignUpScreen() {
           validateOnChange
           onSubmit={async (values, { resetForm }) => {
             try {
+              setLoading(true);
               await signup(values.email, values.password);
               resetForm();
               router.replace("/employee");
             } catch (error: any) {
               Alert.alert("Sign Up Failed", error.message);
+            } finally {
+              setLoading(false);
             }
           }}
         >
@@ -169,16 +174,22 @@ export default function SignUpScreen() {
                 )}
               </View>
 
-              <Pressable
-                style={[
-                  styles.button,
-                  (!isValid || !dirty) && styles.buttonDisabled,
-                ]}
-                onPress={() => handleSubmit()}
-                disabled={!isValid || !dirty}
-              >
-                <Text style={styles.buttonText}>Create account</Text>
-              </Pressable>
+              {loading ? (
+                <View style={styles.loadingIndicator}>
+                  <ActivityIndicator size="large" color={COLORS.primary} />
+                </View>
+              ) : (
+                <Pressable
+                  style={[
+                    styles.button,
+                    (!isValid || !dirty) && styles.buttonDisabled,
+                  ]}
+                  onPress={() => handleSubmit()}
+                  disabled={!isValid || !dirty}
+                >
+                  <Text style={styles.buttonText}>Create account</Text>
+                </Pressable>
+              )}
 
               <Pressable onPress={() => router.push("/sign-in")}>
                 <Text style={styles.signInText}>
@@ -309,5 +320,10 @@ const styles = StyleSheet.create({
   signInLink: {
     color: COLORS.primary,
     fontWeight: "700",
+  },
+  loadingIndicator: {
+    marginTop: 12,
+    paddingVertical: 16,
+    alignItems: "center",
   },
 });

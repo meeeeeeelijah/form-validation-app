@@ -1,7 +1,9 @@
+import { useAuth } from "@/providers/AuthProvider";
 import { useFocusEffect } from "@react-navigation/native";
+import { router } from "expo-router";
 import { collection, getDocs, query, where } from "firebase/firestore";
-import { useCallback, useState } from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { auth, db } from "../../config/firebase";
 
 type Employee = {
@@ -14,6 +16,13 @@ type Employee = {
 
 export default function EmployeesListScreen() {
   const [employees, setEmployees] = useState<Employee[]>([]);
+
+  const { user, logout } = useAuth();
+  useEffect(() => {
+    if (!user) {
+      router.replace("/");
+    }
+  }, [user]);
 
   async function fetchEmployees() {
     const user = auth.currentUser;
@@ -77,6 +86,10 @@ export default function EmployeesListScreen() {
           </View>
         )}
       />
+
+      <Pressable style={styles.button} onPress={() => logout()}>
+        <Text style={styles.buttonText}>Logout</Text>
+      </Pressable>
     </View>
   );
 }
@@ -165,5 +178,17 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 40,
     fontSize: 14,
+  },
+  button: {
+    alignItems: "center",
+    backgroundColor: COLORS.primary,
+    borderRadius: 12,
+    marginTop: 8,
+    paddingVertical: 16,
+  },
+  buttonText: {
+    color: COLORS.text,
+    fontSize: 16,
+    fontWeight: "700",
   },
 });
