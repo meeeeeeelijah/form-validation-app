@@ -1,3 +1,4 @@
+import { useAuth } from "@/providers/AuthProvider";
 import { router } from "expo-router";
 import {
   KeyboardAvoidingView,
@@ -9,6 +10,8 @@ import {
 } from "react-native";
 
 export default function HomeScreen() {
+  const { user, logout } = useAuth();
+
   return (
     <KeyboardAvoidingView
       style={styles.keyboardView}
@@ -16,18 +19,30 @@ export default function HomeScreen() {
     >
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.brand}>FormFlow</Text>
-        <Pressable
-          style={styles.button}
-          onPress={() => router.push("/sign-up")}
-        >
-          <Text style={styles.buttonText}>Sign up</Text>
-        </Pressable>
-        <Pressable
-          style={styles.button}
-          onPress={() => router.push("/sign-in")}
-        >
-          <Text style={styles.buttonText}>Sign In</Text>
-        </Pressable>
+
+        {!user && (
+          <Pressable
+            style={styles.button}
+            onPress={() => router.push("/sign-up")}
+          >
+            <Text style={styles.buttonText}>Sign up</Text>
+          </Pressable>
+        )}
+
+        {!user && (
+          <Pressable
+            style={styles.button}
+            onPress={() => router.push("/sign-in")}
+          >
+            <Text style={styles.buttonText}>Sign In</Text>
+          </Pressable>
+        )}
+
+        {user && (
+          <Pressable style={styles.button} onPress={() => logout()}>
+            <Text style={styles.buttonText}>Logout</Text>
+          </Pressable>
+        )}
       </ScrollView>
     </KeyboardAvoidingView>
   );

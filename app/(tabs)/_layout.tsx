@@ -44,6 +44,18 @@ export default function TabLayout() {
           options={{ href: null }} // hides tab entirely
         />
       )}
+
+      {user ? (
+        <Tabs.Screen
+          name="employees-list"
+          options={{ title: "Employee List" }}
+        />
+      ) : (
+        <Tabs.Screen
+          name="employees-list"
+          options={{ href: null }} // hides tab entirely
+        />
+      )}
     </Tabs>
   );
 }
